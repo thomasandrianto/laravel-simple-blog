@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
      
-        $schedule->command('posts:publish-scheduled')->everyMinute();
+        $schedule->command('posts:publish-scheduled')->everyMinute()
+        ->appendOutputTo(storage_path('logs/scheduler.log'));
     }
 
     /**

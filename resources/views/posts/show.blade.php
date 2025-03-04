@@ -9,14 +9,17 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="p-6 bg-white shadow rounded-lg">
                 @if ($post->image_url)
-                    <img src="{{ asset($post->image_url) }}" class="w-full h-64 object-cover rounded-md mb-3">
-                @endif
+    <img src="{{ Storage::url($post->image_url) }}" class="w-full h-64 object-cover rounded-md mb-3" alt="{{ $post->title }}">
+@endif
 
                 <h3 class="text-2xl font-bold">{{ $post->title }}</h3>
-                <p class="text-gray-600">By: {{ $post->user->name }} | Published: {{ $post->published_at ?? '-' }}</p>
+                <p class="text-gray-600">
+                    By: {{ $post->user->name }} | 
+                    Published: {{ $post->published_at?->translatedFormat('d M Y, H:i') ?? 'Not Published' }}
+                </p>
                 
                 <div class="mt-4 text-gray-800">
-                    {!! nl2br(e($post->content)) !!}
+                    {!! nl2br($post->content) !!}
                 </div>
 
                 <div class="mt-6">

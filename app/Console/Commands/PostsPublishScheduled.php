@@ -13,25 +13,21 @@ class PostsPublishScheduled extends Command
 
     public function handle()
     {
-        Log::info('Command posts:publish-scheduled mulai berjalan.');
+        Log::info('Command posts:publish-scheduled start.');
 
-        $posts = Post::where('status', 'scheduled')
-             ->where('scheduled_at', '<=', now())
-             ->get();
+        $updatedCount = Post::where('status', Post::STATUS_SCHEDULED)
+            ->where('scheduled_at', '<=', now())
+            ->update([
+                'status' => Post::STATUS_PUBLISHED,
+                'published_at' => now(),
+            ]);
 
-        if ($posts->isEmpty()) {
-            Log::info('Tidak ada post yang harus dipublish.');
+        if ($updatedCount > 0) {
+            Log::info("Total {$updatedCount} post has published.");
         } else {
-            foreach ($posts as $post) {
-                Log::info("Memproses post ID: {$post->id}");
-                $post->update([
-                    'status' => 'published',
-                    'published_at' => now(),
-                ]);
-                Log::info("Post ID {$post->id} telah dipublish.");
-            }
+            Log::info('There are no posts that must be published.');
         }
 
-        Log::info('Command posts:publish-scheduled selesai.');
+        Log::info('Command posts:publish-scheduled done.');
     }
 }

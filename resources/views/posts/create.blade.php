@@ -47,14 +47,14 @@
                                 </div>
 
                                 <!-- Publish Date -->
-                                <div>
+                                <div id="published_at_container" class="hidden">
                                     <x-input-label for="published_at" :value="__('Publish Date')" />
                                     <x-text-input id="published_at" name="published_at" type="datetime-local" class="mt-1 block w-full" />
                                     <x-input-error :messages="$errors->get('published_at')" class="mt-2" />
                                 </div>
 
                                 <!-- Scheduled Date -->
-                                <div>
+                                <div id="scheduled_at_container" class="hidden">
                                     <x-input-label for="scheduled_at" :value="__('Scheduled Date')" />
                                     <x-text-input id="scheduled_at" name="scheduled_at" type="datetime-local" class="mt-1 block w-full" />
                                     <x-input-error :messages="$errors->get('scheduled_at')" class="mt-2" />
@@ -79,3 +79,26 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+window.onload = function () {
+    const statusSelect = document.getElementById("status");
+    const scheduledAtContainer = document.getElementById("scheduled_at_container");
+    const publishedAtContainer = document.getElementById("published_at_container");
+    const scheduledAtField = document.getElementById("scheduled_at");
+    const publishedAtField = document.getElementById("published_at");
+
+    function updateFields() {
+        const status = statusSelect.value;
+
+        scheduledAtContainer.classList.toggle("hidden", status !== "scheduled");
+        publishedAtContainer.classList.toggle("hidden", status !== "published");
+
+        scheduledAtField.required = (status === "scheduled");
+        publishedAtField.required = (status === "published");
+    }
+
+    statusSelect.addEventListener("change", updateFields);
+    updateFields();
+};
+</script>

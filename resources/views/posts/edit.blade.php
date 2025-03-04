@@ -11,7 +11,7 @@
                 <div class="max-w-xl">
                     @auth
                         <section>
-                            <form method="POST" action="{{ route('posts.update', $post->id) }}" enctype="multipart/form-data" class="space-y-6">
+                            <form method="POST" action="{{ route('posts.update', $post) }}" enctype="multipart/form-data" class="space-y-6">
                                 @csrf
                                 @method('PUT')
 
@@ -34,38 +34,40 @@
                                     <x-input-label for="image" :value="__('Upload Image')" />
                                     <input type="file" id="image" name="image" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                                     <x-input-error :messages="$errors->get('image')" class="mt-2" />
-                                    @if ($post->image)
+                                    @if ($post->image_url)
                                         <div class="mt-2">
                                             <p>Current Image:</p>
-                                            <img src="{{ asset('storage/' . $post->image) }}" class="w-40 h-auto rounded-md">
+                                            <img src="{{ Storage::url($post->image_url) }}" class="w-40 h-auto rounded-md">
                                         </div>
                                     @endif
                                 </div>
-
+                                                               
                                 <!-- Status -->
-                                <div>
+                                <div x-data="{ status: '{{ old('status', $post->status->value) }}' }">
                                     <x-input-label for="status" :value="__('Status')" />
-                                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                                        <option value="draft" {{ old('status', $post->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                                        <option value="scheduled" {{ old('status', $post->status) == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                                        <option value="published" {{ old('status', $post->status) == 'published' ? 'selected' : '' }}>Published</option>
+                                    <select id="status" name="status" x-model="status"
+                                        class="mt-1 mb-4 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                        <option value="draft" @selected(old('status', $post->status->value) === 'draft')>Draft</option>
+                                        <option value="scheduled" @selected(old('status', $post->status->value) === 'scheduled')>Scheduled</option>
+                                        <option value="published" @selected(old('status', $post->status->value) === 'published')>Published</option>
                                     </select>
                                     <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                                </div>
 
-                                <!-- Publish Date -->
-                                <div>
-                                    <x-input-label for="published_at" :value="__('Publish Date')" />
-                                    <x-text-input id="published_at" name="published_at" type="datetime-local" class="mt-1 block w-full" value="{{ old('published_at', $post->published_at ? \Illuminate\Support\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : '') }}" />
-                                    <x-input-error :messages="$errors->get('published_at')" class="mt-2" />
-                                </div>
+                                    <!-- Publish Date -->
+                                    <div x-show="status === 'published'" x-cloak>
+                                        <x-input-label for="published_at" :value="__('Publish Date')" />
+                                        <x-text-input id="published_at" name="published_at" type="datetime-local" class="mt-1 block w-full"
+                                            value="{{ old('published_at', $post->published_at ? \Illuminate\Support\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : '') }}" />
+                                        <x-input-error :messages="$errors->get('published_at')" class="mt-2" />
+                                    </div>
 
-                                <!-- Scheduled Date -->
-                                <div>
-                                    <x-input-label for="scheduled_at" :value="__('Scheduled Date')" />
-                                    <x-text-input id="scheduled_at" name="scheduled_at" type="datetime-local" class="mt-1 block w-full" 
-                                        value="{{ old('scheduled_at', $post->scheduled_at ? \Illuminate\Support\Carbon::parse($post->scheduled_at)->format('Y-m-d\TH:i') : '') }}" />
-                                    <x-input-error :messages="$errors->get('scheduled_at')" class="mt-2" />
+                                    <!-- Scheduled Date -->
+                                    <div x-show="status === 'scheduled'" x-cloak>
+                                        <x-input-label for="scheduled_at" :value="__('Scheduled Date')" />
+                                        <x-text-input id="scheduled_at" name="scheduled_at" type="datetime-local" class="mt-1 block w-full"
+                                            value="{{ old('scheduled_at', $post->scheduled_at ? \Illuminate\Support\Carbon::parse($post->scheduled_at)->format('Y-m-d\TH:i') : '') }}" />
+                                        <x-input-error :messages="$errors->get('scheduled_at')" class="mt-2" />
+                                    </div>
                                 </div>
 
                                 <!-- Submit Button -->

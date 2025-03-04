@@ -27,19 +27,19 @@
                         @forelse ($posts as $post)
                             <div class="rounded-md border p-5 shadow">
                                 <div class="flex items-center gap-2">
-                                    @if ($post->status == 'active')
-                                        <span class="flex-none rounded bg-green-100 px-2 py-1 text-green-800">Active</span>
-                                    @elseif ($post->status == 'draft')
-                                        <span class="flex-none rounded bg-gray-100 px-2 py-1 text-gray-800">Draft</span>
-                                    @elseif ($post->status == 'scheduled')
-                                        <span class="flex-none rounded bg-yellow-100 px-2 py-1 text-yellow-800">Scheduled</span>
-                                    @endif
+                                    <span class="flex-none rounded px-2 py-1 
+                                        @if ($post->status === \App\Enums\PostStatus::Published) bg-green-100 text-green-800
+                                        @elseif ($post->status === \App\Enums\PostStatus::Draft) bg-gray-100 text-gray-800
+                                        @elseif ($post->status === \App\Enums\PostStatus::Scheduled) bg-yellow-100 text-yellow-800
+                                        @endif">
+                                        {{ $post->status->label() }}
+                                    </span>
                                     <h3><a href="{{ route('posts.show', $post) }}" class="text-blue-500">{{ $post->title }}</a></h3>
                                 </div>
                                 <div class="mt-4 flex items-end justify-between">
                                     <div>
-                                        <div>Published: {{ $post->published_at ?? '-' }}</div>
-                                        <div>Updated: {{ $post->updated_at->format('Y-m-d') }}</div>
+                                        <div>Published: {{ $post->published_at?->format('d M Y, H:i') }}</div>
+                                        <div>Updated: {{ $post->updated_at?->diffForHumans() }}</div>
                                     </div>
                                     <div>
                                         <a href="{{ route('posts.show', $post) }}" class="text-blue-500">Detail</a> /

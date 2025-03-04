@@ -9,10 +9,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $posts = auth()->check() 
-            ? Post::where('user_id', auth()->id())->latest()->paginate(5)
-            : collect(); // Jika user belum login, kirim koleksi kosong
-
+        $posts = Post::when(auth()->check(), function ($query) {
+            $query->where('user_id', auth()->id())->orderBy('created_at', 'desc');
+        })->paginate(5);
+    
         return view('home', compact('posts'));
     }
 }
